@@ -6,8 +6,9 @@
   <title>Chúc Mừng Sinh Nhật Mẹ Nguyệt 🎂</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Nunito:wght@300;400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
 <body>
 
@@ -18,12 +19,10 @@
   <button id="music-btn" class="music-btn" aria-label="Bật/tắt nhạc" title="Bật/tắt nhạc">
     <span class="music-icon">🎵</span>
   </button>
-  <audio id="bg-music" loop preload="auto">
-    <source src="music/the_mountain-birthday-490600.mp3" type="audio/mpeg" />
-  </audio>
 
   <!-- ===== HERO SECTION ===== -->
   <section class="hero">
+    <canvas id="three-canvas"></canvas>
     <div class="hero-content">
       <p class="hero-subtitle reveal">Một ngày thật đặc biệt</p>
       <h1 class="hero-title">
@@ -121,6 +120,7 @@
     <p class="footer-year">2025</p>
   </footer>
 
+  <script src="js/petals3d.js"></script>
   <script src="js/confetti.js"></script>
   <script src="js/main.js"></script>
 </body>

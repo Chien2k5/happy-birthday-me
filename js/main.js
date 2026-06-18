@@ -10,7 +10,7 @@
         io.unobserve(e.target);
       }
     });
-  }, { threshold: 0.15 });
+  }, { threshold: 0.12 });
   els.forEach(el => io.observe(el));
 })();
 
@@ -18,29 +18,88 @@
    LAUNCH CONFETTI ON PAGE LOAD
    ============================================================ */
 window.addEventListener('load', function () {
-  setTimeout(launchConfetti, 400);
+  setTimeout(launchConfetti, 500);
 });
 
 /* ============================================================
-   MUSIC PLAYER
+   FLOATING HEARTS — inject into sections
    ============================================================ */
 (function () {
+  const sections = document.querySelectorAll('.cake-section, .gallery-section, .message-section');
+  sections.forEach(sec => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'floating-hearts';
+    const count = 5;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('span');
+      el.className = 'fh';
+      el.textContent = ['💕','💖','🌸','❤️','✨'][i % 5];
+      el.style.left = (10 + (i / count) * 80) + '%';
+      el.style.animationDuration = (8 + Math.random() * 8) + 's';
+      el.style.animationDelay    = (Math.random() * 6) + 's';
+      el.style.fontSize = (.8 + Math.random() * .8) + 'rem';
+      wrapper.appendChild(el);
+    }
+    sec.style.position = 'relative';
+    sec.insertBefore(wrapper, sec.firstChild);
+  });
+})();
+
+/* ============================================================
+   MUSIC PLAYER — PLAYLIST
+   ============================================================ */
+(function () {
+  const PLAYLIST = [
+    'music/the_mountain-birthday-490600.mp3',
+    'music/nastelbom-happy-birthday-471481.mp3',
+  ];
+  const TRACK_NAMES = ['Bài 1 / 2 🎵', 'Bài 2 / 2 🎵'];
+
   const btn   = document.getElementById('music-btn');
-  const audio = document.getElementById('bg-music');
+  const label = document.createElement('div');
+  label.className = 'music-track-label';
+  document.body.appendChild(label);
+
+  let currentIndex = 0;
   let playing = false;
+  const audio = new Audio();
+  audio.volume = 0.4;
+
+  function loadTrack(idx) {
+    audio.src = PLAYLIST[idx];
+    audio.load();
+  }
+
+  function showLabel(text) {
+    label.textContent = text;
+    label.classList.add('show');
+    clearTimeout(label._timer);
+    label._timer = setTimeout(() => label.classList.remove('show'), 3000);
+  }
 
   function tryPlay() {
-    audio.volume = 0.4;
     audio.play().then(() => {
       playing = true;
       btn.classList.add('playing');
+      btn.classList.remove('muted');
+      btn.querySelector('.music-icon').textContent = '🎵';
       btn.title = 'Tắt nhạc';
-    }).catch(() => {
-      /* autoplay blocked — wait for user interaction */
-    });
+      showLabel(TRACK_NAMES[currentIndex]);
+    }).catch(() => { /* autoplay blocked */ });
   }
 
-  /* Attempt autoplay on first user interaction */
+  /* Auto-advance to next track */
+  audio.addEventListener('ended', () => {
+    currentIndex = (currentIndex + 1) % PLAYLIST.length;
+    loadTrack(currentIndex);
+    audio.play().then(() => {
+      showLabel(TRACK_NAMES[currentIndex]);
+    }).catch(() => {});
+  });
+
+  loadTrack(currentIndex);
+
+  /* Attempt autoplay on first interaction */
   function onFirstInteraction() {
     if (!playing) tryPlay();
     document.removeEventListener('click', onFirstInteraction);
@@ -48,7 +107,6 @@ window.addEventListener('load', function () {
   }
   document.addEventListener('click', onFirstInteraction);
   document.addEventListener('touchstart', onFirstInteraction);
-  /* Also try immediately (works on some browsers) */
   tryPlay();
 
   btn.addEventListener('click', function (e) {
@@ -61,112 +119,84 @@ window.addEventListener('load', function () {
       btn.querySelector('.music-icon').textContent = '🔇';
       btn.title = 'Bật nhạc';
     } else {
-      audio.play();
-      playing = true;
-      btn.classList.remove('muted');
-      btn.classList.add('playing');
-      btn.querySelector('.music-icon').textContent = '🎵';
-      btn.title = 'Tắt nhạc';
+      audio.play().then(() => {
+        playing = true;
+        btn.classList.remove('muted');
+        btn.classList.add('playing');
+        btn.querySelector('.music-icon').textContent = '🎵';
+        btn.title = 'Tắt nhạc';
+        showLabel(TRACK_NAMES[currentIndex]);
+      });
     }
   });
 })();
 
 /* ============================================================
-   CAKE — BLOW CANDLES
+   CAKE — BLOW CANDLES (shake + wind + smoke + fireworks)
    ============================================================ */
 (function () {
-  const blowBtn  = document.getElementById('blow-btn');
-  const cakeMsg  = document.getElementById('cake-msg');
-  const candles  = document.querySelectorAll('.candle');
+  const blowBtn = document.getElementById('blow-btn');
+  const cakeMsg = document.getElementById('cake-msg');
+  const candles = document.querySelectorAll('.candle');
   let blown = false;
+
+  function spawnSmoke(candle) {
+    const rect = candle.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + 4;
+    for (let i = 0; i < 4; i++) {
+      const s = document.createElement('div');
+      s.className = 'smoke-particle';
+      const dx = (Math.random() - .5) * 30;
+      s.style.cssText = `left:${cx}px;top:${cy}px;--dx:${dx}px;animation-delay:${i * 80}ms`;
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1200);
+    }
+  }
 
   blowBtn.addEventListener('click', function () {
     if (blown) return;
 
-    /* Blow candles one by one */
+    /* Shake the button */
+    blowBtn.classList.add('shaking');
+    setTimeout(() => blowBtn.classList.remove('shaking'), 500);
+
+    /* Wind + blow each candle sequentially */
     candles.forEach((c, i) => {
       setTimeout(() => {
-        c.classList.add('blown');
-        /* small burst at each candle position */
-        const rect = c.getBoundingClientRect();
-        burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 12);
-      }, i * 120);
+        c.classList.add('wind');
+        setTimeout(() => {
+          c.classList.remove('wind');
+          c.classList.add('blown');
+          spawnSmoke(c);
+          /* small burst per candle */
+          const r = c.getBoundingClientRect();
+          burstAt(r.left + r.width / 2, r.top + r.height / 2, 14);
+        }, 280);
+      }, i * 200);
     });
 
-    /* After all blown */
+    /* After all blown — fireworks */
+    const totalDelay = candles.length * 200 + 400;
     setTimeout(() => {
       blown = true;
       blowBtn.disabled = true;
-      blowBtn.textContent = '🎉 Đã thổi!';
+      blowBtn.textContent = '🎉 Đã thổi rồi!';
       cakeMsg.textContent = '🎂 Chúc Mẹ Nguyệt sinh nhật vui vẻ! 🎂';
+      cakeMsg.classList.add('show');
 
-      /* Big confetti burst from centre */
-      burstAt(window.innerWidth / 2, window.innerHeight / 2, 80);
-      setTimeout(() => launchConfetti(), 300);
-    }, candles.length * 120 + 200);
-  });
-})();
-
-/* ============================================================
-   GALLERY — DYNAMIC IMAGE LOADING
-   ============================================================ */
-(function () {
-  const grid        = document.getElementById('gallery-grid');
-  const placeholder = document.getElementById('gallery-placeholder');
-
-  /* Common image extensions to try */
-  const COMMON_NAMES = [
-    'photo1','photo2','photo3','photo4','photo5','photo6',
-    'img1','img2','img3','img4',
-    'me','mom','mother','family','memories',
-    '1','2','3','4','5','6',
-  ];
-  const EXTS = ['jpg','jpeg','png','webp','JPG','JPEG','PNG','WEBP'];
-
-  let loaded = 0;
-
-  function addImage(src) {
-    const div = document.createElement('div');
-    div.className = 'gallery-item reveal';
-    const img = document.createElement('img');
-    img.src = src;
-    img.alt = 'Ảnh kỷ niệm';
-    img.loading = 'lazy';
-    div.appendChild(img);
-    grid.appendChild(div);
-
-    /* Trigger reveal for dynamically added elements */
-    setTimeout(() => div.classList.add('visible'), 50 * loaded);
-    loaded++;
-  }
-
-  function probe(src) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload  = () => resolve(src);
-      img.onerror = () => resolve(null);
-      img.src = src;
-    });
-  }
-
-  async function scanImages() {
-    const promises = [];
-    COMMON_NAMES.forEach(name => {
-      EXTS.forEach(ext => {
-        promises.push(probe(`images/${name}.${ext}`));
+      /* 5 bursts at different positions */
+      const positions = [
+        [window.innerWidth * .2,  window.innerHeight * .3],
+        [window.innerWidth * .8,  window.innerHeight * .3],
+        [window.innerWidth * .5,  window.innerHeight * .2],
+        [window.innerWidth * .15, window.innerHeight * .6],
+        [window.innerWidth * .85, window.innerHeight * .6],
+      ];
+      positions.forEach(([x, y], idx) => {
+        setTimeout(() => burstAt(x, y, 55), idx * 160);
       });
-    });
-
-    const results = await Promise.all(promises);
-    const found = [...new Set(results.filter(Boolean))];
-
-    if (found.length === 0) {
-      placeholder.style.display = '';
-      grid.style.display = 'none';
-    } else {
-      found.forEach(src => addImage(src));
-    }
-  }
-
-  scanImages();
+      setTimeout(() => launchConfetti(), 300);
+    }, totalDelay);
+  });
 })();
