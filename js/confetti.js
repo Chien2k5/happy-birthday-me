@@ -1,106 +1,62 @@
-/* Lightweight canvas confetti engine */
-(function () {
-  const canvas = document.getElementById('confetti-canvas');
-  const ctx = canvas.getContext('2d');
+(() => {
+  const canvas = document.querySelector('#confetti-canvas');
+  const context = canvas?.getContext('2d');
+  if (!canvas || !context) return;
 
-  const COLORS = ['#FFB7C5','#FF8FAB','#D4AF37','#F5E6A3','#fff','#ffd1e8','#ffc2d4'];
-  const MAX = 120;
-  let pieces = [];
-  let running = false;
-  let animId;
+  const colors = ['#7c2738', '#b75b68', '#c69b58', '#ead0cc', '#fffaf2'];
+  let particles = [];
+  let animationFrame;
 
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
+  const resize = () => {
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = window.innerWidth * ratio;
+    canvas.height = window.innerHeight * ratio;
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  };
 
-  function randomPiece(x, y) {
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 2 + Math.random() * 4;
-    return {
-      x: x ?? Math.random() * canvas.width,
-      y: y ?? -12,
-      vx: Math.cos(angle) * speed * .5 + (Math.random() - .5),
-      vy: speed * .8 + Math.random() * 2,
-      r: 4 + Math.random() * 6,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      rot: Math.random() * Math.PI * 2,
-      rotV: (Math.random() - .5) * .12,
-      shape: Math.random() > .4 ? 'rect' : 'circle',
-      alpha: 1,
-      w: 6 + Math.random() * 8,
-      h: 4 + Math.random() * 6,
-    };
-  }
+  const createParticle = () => ({
+    x: Math.random() * window.innerWidth,
+    y: -20 - Math.random() * window.innerHeight * .35,
+    width: 4 + Math.random() * 6,
+    height: 8 + Math.random() * 9,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    speedX: -1.2 + Math.random() * 2.4,
+    speedY: 2.4 + Math.random() * 3.2,
+    rotation: Math.random() * Math.PI,
+    rotationSpeed: -.09 + Math.random() * .18,
+    wave: Math.random() * Math.PI * 2,
+    opacity: .7 + Math.random() * .3
+  });
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    pieces.forEach(p => {
-      ctx.save();
-      ctx.globalAlpha = p.alpha;
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot);
-      ctx.fillStyle = p.color;
-      if (p.shape === 'rect') {
-        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-      } else {
-        ctx.beginPath();
-        ctx.arc(0, 0, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
+  const draw = () => {
+    context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+    particles.forEach((particle) => {
+      particle.wave += .045;
+      particle.x += particle.speedX + Math.sin(particle.wave) * .6;
+      particle.y += particle.speedY;
+      particle.rotation += particle.rotationSpeed;
+      if (particle.y > window.innerHeight * .78) particle.opacity -= .022;
+
+      context.save();
+      context.globalAlpha = Math.max(0, particle.opacity);
+      context.translate(particle.x, particle.y);
+      context.rotate(particle.rotation);
+      context.fillStyle = particle.color;
+      context.fillRect(-particle.width / 2, -particle.height / 2, particle.width, particle.height);
+      context.restore();
     });
-  }
 
-  function update() {
-    pieces.forEach(p => {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.06; // gravity
-      p.rot += p.rotV;
-      if (p.y > canvas.height * .7) p.alpha -= 0.018;
-    });
-    pieces = pieces.filter(p => p.alpha > 0);
-  }
+    particles = particles.filter((particle) => particle.opacity > 0 && particle.y < window.innerHeight + 30);
+    if (particles.length) animationFrame = requestAnimationFrame(draw);
+  };
 
-  function loop() {
-    update();
+  window.launchConfetti = (amount = 110) => {
+    particles.push(...Array.from({ length: amount }, createParticle));
+    cancelAnimationFrame(animationFrame);
     draw();
-    if (pieces.length > 0 || running) {
-      animId = requestAnimationFrame(loop);
-    }
-  }
-
-  let spawnCount = 0;
-  const SPAWN_BATCHES = 6;
-
-  function spawnBatch() {
-    if (spawnCount >= SPAWN_BATCHES) { running = false; return; }
-    const n = Math.floor(MAX / SPAWN_BATCHES);
-    for (let i = 0; i < n; i++) pieces.push(randomPiece());
-    spawnCount++;
-    setTimeout(spawnBatch, 300);
-  }
-
-  window.launchConfetti = function () {
-    spawnCount = 0;
-    running = true;
-    spawnBatch();
-    cancelAnimationFrame(animId);
-    loop();
   };
 
-  /* Burst from a point (for cake blow) */
-  window.burstAt = function (x, y, count) {
-    count = count || 40;
-    for (let i = 0; i < count; i++) {
-      pieces.push(randomPiece(x, y));
-    }
-    if (!running) {
-      cancelAnimationFrame(animId);
-      loop();
-    }
-  };
+  window.addEventListener('resize', resize, { passive: true });
+  resize();
 })();
