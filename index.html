@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chúc Mừng Sinh Nhật Mẹ Nguyệt 🎂</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Music Button -->
+  <button id="music-btn" class="music-btn" aria-label="Bật/tắt nhạc" title="Bật/tắt nhạc">
+    <span class="music-icon">🎵</span>
+  </button>
+  <audio id="bg-music" loop preload="auto">
+    <source src="music/the_mountain-birthday-490600.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-subtitle reveal">Một ngày thật đặc biệt</p>
+      <h1 class="hero-title">
+        <span class="line-1 reveal">Chúc Mừng</span>
+        <span class="line-2 reveal">Sinh Nhật</span>
+        <span class="line-3 reveal">Mẹ <em>Nguyệt</em> 🌸</span>
+      </h1>
+      <div class="hero-divider reveal">
+        <span></span><span class="diamond">❤</span><span></span>
+      </div>
+    </div>
+    <div class="scroll-hint reveal">
+      <span>Cuộn xuống để xem thêm</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ===== CAKE SECTION ===== -->
+  <section class="cake-section">
+    <div class="container">
+      <h2 class="section-title reveal">Thổi nến sinh nhật nào! 🎂</h2>
+      <div class="cake-wrapper reveal">
+        <div class="cake" id="cake">
+          <!-- Candles -->
+          <div class="candles">
+            <div class="candle" data-index="0"><div class="flame"><div class="flame-inner"></div></div></div>
+            <div class="candle" data-index="1"><div class="flame"><div class="flame-inner"></div></div></div>
+            <div class="candle" data-index="2"><div class="flame"><div class="flame-inner"></div></div></div>
+            <div class="candle" data-index="3"><div class="flame"><div class="flame-inner"></div></div></div>
+            <div class="candle" data-index="4"><div class="flame"><div class="flame-inner"></div></div></div>
+          </div>
+          <!-- Cake body -->
+          <div class="cake-top">
+            <div class="cake-decoration">
+              <span>🌸</span><span>💕</span><span>🌸</span>
+            </div>
+          </div>
+          <div class="cake-middle"></div>
+          <div class="cake-bottom"></div>
+          <div class="cake-plate"></div>
+        </div>
+        <button class="blow-btn" id="blow-btn">
+          <span>Thổi nến 🌬️</span>
+        </button>
+        <p class="cake-msg" id="cake-msg"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MESSAGE SECTION ===== -->
+  <section class="message-section">
+    <div class="container">
+      <div class="letter-card reveal">
+        <div class="letter-header">
+          <div class="letter-rose">🌹</div>
+          <h2 class="letter-title">Lời Con Gửi Mẹ</h2>
+          <div class="letter-rose">🌹</div>
+        </div>
+        <div class="letter-body">
+          <p>Chúc mừng sinh nhật mẹ yêu.</p>
+          <p>Con chẳng giỏi nói những lời hoa mỹ, nên con chỉ mong mẹ luôn khỏe mạnh, vui vẻ và sống thật lâu bên gia đình mình.</p>
+          <p>Cảm ơn mẹ vì đã luôn yêu thương, bao dung và đồng hành cùng con trong mọi giai đoạn của cuộc sống.</p>
+          <p>Tuổi mới của mẹ, con chúc mẹ nhiều niềm vui, ít muộn phiền và lúc nào cũng nở nụ cười thật tươi.</p>
+          <p class="letter-love">Con yêu mẹ rất nhiều. 💖</p>
+        </div>
+        <div class="letter-footer">
+          <span>— Con của Mẹ —</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PHOTO GALLERY ===== -->
+  <section class="gallery-section">
+    <div class="container">
+      <h2 class="section-title reveal">Những Kỷ Niệm Đẹp 📷</h2>
+      <div class="gallery-grid reveal" id="gallery-grid">
+        <div class="gallery-item"><img src="images/166bae57-0336-4630-a5c2-3a9d27c60fd6.jpg" alt="Ảnh kỷ niệm" loading="lazy" /></div>
+        <div class="gallery-item"><img src="images/80f98ea0-f4fd-4d03-88d3-cd0d02e65924.jpg" alt="Ảnh kỷ niệm" loading="lazy" /></div>
+        <div class="gallery-item"><img src="images/8c783a49-f7f2-4ea0-9ca0-c33f2378990f.jpg" alt="Ảnh kỷ niệm" loading="lazy" /></div>
+        <div class="gallery-item"><img src="images/eaf0b816-f47a-470b-bab0-45a47f615d7d.jpg" alt="Ảnh kỷ niệm" loading="lazy" /></div>
+        <div class="gallery-item"><img src="images/z7947495971688_53d9422d0516d84b31ca056e177d6c2e.jpg" alt="Ảnh kỷ niệm" loading="lazy" /></div>
+        <div class="gallery-item"><img src="images/z7947604231453_7ffad09d21c960db2187eb5563d28157.jpg" alt="Ảnh kỷ niệm" loading="lazy" /></div>
+        <div class="gallery-item"><img src="images/z7948362441669_9d5b67cc6c6df412fd6a9167b816d062.jpg" alt="Ảnh kỷ niệm" loading="lazy" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-hearts">
+      <span>💕</span><span>💕</span><span>💕</span>
+    </div>
+    <p>Làm với tất cả tình yêu thương dành cho Mẹ Nguyệt</p>
+    <p class="footer-year">2025</p>
+  </footer>
+
+  <script src="js/confetti.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
